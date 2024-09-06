@@ -1,0 +1,65 @@
+services:
+  app:
+    container_name: ecommerce-app
+    networks:
+      - app-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
+      - ./storage:/app/storage
+      - public:/app/public
+    working_dir: /app
+    restart: always
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: curl --fail http://localhost || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    networks:
+      - app-network
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - ./postgresql/data:/var/lib/postgres/data\
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${DB_USERNAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: pgAdmin
+#    ports:
+#      - "5050:80"
+#    depends_on:
+#      - postgres
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: uthman@gmail.com
+#      PGADMIN_DEFAULT_PASSWORD: password
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  public:
