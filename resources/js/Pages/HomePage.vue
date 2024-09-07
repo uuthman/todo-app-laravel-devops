@@ -5,7 +5,7 @@ import BaseLayout from "@/Layouts/BaseLayout.vue";
 </script>
 
 <template>
-  <BaseLayout title="Todo App">
+  <BaseLayout title="Devops Todo app">
     <Head>
       <title>Todo App</title>
     </Head>
