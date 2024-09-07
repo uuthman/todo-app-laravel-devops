@@ -10,8 +10,6 @@ services:
       - type: bind
         source: ./.env
         target: /app/.env
-      - ./storage:/app/storage
-      - public:/app/public
     working_dir: /app
     restart: always
     ports:
@@ -60,6 +58,3 @@ services:
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  public:

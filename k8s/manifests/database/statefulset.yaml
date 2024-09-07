@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-postgres
+  labels:
+    tier: backend
+    layer: database
+spec:
+  selector:
+    matchLabels:
+      tier: backend
+      layer: database
+  serviceName: todo-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        tier: backend
+        layer: database
+    spec:
+      containers:
+        - name: db
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: todoDb
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-postgres
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-postgres
+                  key: password
+          volumeMounts:
+            - mountPath: /var/lib/postgres/data
+              name: data
+          resources:
+            requests:
+              cpu: 300m
+              memory: 256Mi
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - pg_isready -U ${POSTGRES_USER}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: todo-postgres
+
+
+

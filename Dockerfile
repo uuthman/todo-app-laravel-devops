@@ -44,7 +44,7 @@ RUN apk add libpq-dev libzip-dev supervisor \
 
 
 
-COPY --from=frontend /app/public ./public
+COPY --from=frontend /app/public ./public/
 
 COPY --from=vendor /app/vendor/ ./vendor/
 

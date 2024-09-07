@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: app
+          image: uthutu/todo-app:v2
+          envFrom:
+            - secretRef:
+                name: todo-secret
+#          livenessProbe:
+#            exec:
+#              command:
+#                - curl --fail http://127.0.0.1 || exit 1
+#            failureThreshold: 5
+#            periodSeconds: 30
+#            timeoutSeconds: 10
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/.env
+              name: todo-config
+              subPath: .env
+          workingDir: /app
+      volumes:
+        - configMap:
+            items:
+              - key: .env
+                path: .env
+            name: todo-config
+          name: todo-config
