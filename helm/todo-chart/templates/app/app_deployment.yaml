@@ -12,9 +12,19 @@ spec:
       labels:
         app: todo-app
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command: ['sh', '-c', 'until nc -w 2 -z todo-postgres 5432; do echo waiting for db; sleep 2; done;']
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-postgres
+                  key: username
       containers:
-        - name: app
-          image: uthutu/todo-app:v2
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           envFrom:
             - secretRef:
                 name: todo-secret
