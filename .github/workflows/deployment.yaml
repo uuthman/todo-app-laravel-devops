@@ -8,6 +8,7 @@ on:
       - 'helm/**'
       - 'README.md'
       - 'docker-compose.yaml'
+      - 'terraform'
 
 
 jobs:
