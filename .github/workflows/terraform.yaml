@@ -1,0 +1,121 @@
+name: 'Terraform'
+
+on:
+  workflow_dispatch:
+    inputs:
+      tfvars_file:
+        description: 'Path to the .tfvars file'
+        required: true
+        default: 'terraform.tfvars'
+
+
+      action:
+        type: choice
+        description: 'Apply or Destroy'
+        options:
+          - plan
+          - apply
+          - destroy
+        required: true
+        default: 'apply'
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
+
+permissions:
+  contents: read
+
+
+jobs:
+  Checkout-repo:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
+
+    env:
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+  Setting-up-terraform:
+    runs-on: ubuntu-latest
+
+    needs: Checkout-repo
+
+    steps:
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '1.8.4'
+
+  Terraform-initializing:
+    runs-on: ubuntu-latest
+    needs: Setting-up-terraform
+
+    steps:
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '1.8.4'
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+
+
+  Terraform-action:
+    runs-on: ubuntu-latest
+    needs: Terraform-initializing
+
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.8.4
+
+      - name: Terraform Init
+        working-directory: eks
+        run: terraform init
+
+      - name: Terraform Plan
+        if: ${{ github.event.inputs.action  == 'plan' }}
+        working-directory: eks
+        # Generates an execution plan for Terraform
+        run: |
+          terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+
+        # Apply the Terraform Configuration according to the parameter
+      - name: Terraform Action
+        if: ${{ github.event.inputs.action  == 'apply' }}
+        working-directory: eks
+        run: terraform ${{ github.event.inputs.action }} -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        working-directory: eks
+        run: terraform ${{ github.event.inputs.action }} -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+
