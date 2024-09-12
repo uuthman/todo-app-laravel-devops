@@ -18,3 +18,15 @@ variable "cluster_name" {
   description = "The name of the eks cluster"
   type = string
 }
+
+variable "policies" {
+  description = "The list of policies"
+  type = list(string)
+}
+
+variable "addons" {
+  type = list(object({
+    name    = string
+    version = string
+  }))
+}
