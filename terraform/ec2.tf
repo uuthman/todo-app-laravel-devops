@@ -1,5 +1,5 @@
 resource "aws_instance" "jump_server" {
-  ami = ""
+  ami = "ami-0e86e20dae9224db8"
   instance_type = "t2.micro"
   security_groups = [aws_security_group.jump_server_sg]
   subnet_id = module.vpc.private_subnets[1]
