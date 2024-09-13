@@ -14,9 +14,7 @@ addons = [
   {
     name    = "kube-proxy"
     version = "v1.29.3-eksbuild.2"
-  },
-  {
-    name    = "aws-ebs-csi-driver"
-    version = "v1.30.0-eksbuild.1"
   }
 ]
+domain = "uthman.online"
+hosted_zone_id = "Z04274712Z3VBTIYJTP2V"

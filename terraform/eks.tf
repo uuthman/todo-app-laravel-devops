@@ -47,10 +47,12 @@ resource "aws_eks_cluster" "eks" {
   tags = {
     Name = var.cluster_name
   }
+
+  depends_on = [aws_iam_role_policy_attachment.AmazonEKSClusterPolicy]
 }
 
 resource "aws_eks_node_group" "eks_node_group_ondemand" {
-  cluster_name  = aws_eks_cluster.eks[0].name
+  cluster_name  = aws_eks_cluster.eks.name
   node_group_name = "${var.cluster_name}-on-demand-nodes"
   node_role_arn = aws_iam_role.eks_nodegroup_role.arn
   subnet_ids = module.vpc.private_subnets
@@ -80,7 +82,7 @@ resource "aws_eks_node_group" "eks_node_group_ondemand" {
 
 
 resource "aws_eks_node_group" "eks_node_group_spot" {
-  cluster_name  = aws_eks_cluster.eks[0].name
+  cluster_name  = aws_eks_cluster.eks.name
   node_group_name = "${var.cluster_name}-spot-nodes"
   node_role_arn = aws_iam_role.eks_nodegroup_role.arn
   subnet_ids = module.vpc.private_subnets

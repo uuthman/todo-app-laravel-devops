@@ -19,14 +19,20 @@ variable "cluster_name" {
   type = string
 }
 
-variable "policies" {
-  description = "The list of policies"
-  type = list(string)
-}
-
 variable "addons" {
   type = list(object({
     name    = string
     version = string
   }))
 }
+
+variable "domain" {
+  description = "The domain url"
+  type = string
+}
+
+variable "hosted_zone_id" {
+  description = "the hosted zone id"
+  type = string
+}
+
