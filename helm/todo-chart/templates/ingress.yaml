@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mainlb
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+
+spec:
+  ingressClassName: alb
+  rules:
+    - host: uthman.online
+      http:
+        paths:
+          - path: /
+            backend:
+              service:
+                name: app-svc
+                port:
+                  number: 8000
+            pathType: Prefix
+
