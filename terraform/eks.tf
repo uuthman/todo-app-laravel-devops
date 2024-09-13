@@ -76,43 +76,43 @@ resource "aws_eks_node_group" "eks_node_group_ondemand" {
   }
 
 
-  depends_on = [aws_eks_cluster.eks]
+#   depends_on = [aws_eks_cluster.eks]
 
 }
 
 
-resource "aws_eks_node_group" "eks_node_group_spot" {
-  cluster_name  = aws_eks_cluster.eks.name
-  node_group_name = "${var.cluster_name}-spot-nodes"
-  node_role_arn = aws_iam_role.eks_nodegroup_role.arn
-  subnet_ids = module.vpc.private_subnets
-
-  instance_types = ["t3.medium","t3a.large", "t3a.xlarge"]
-
-  scaling_config {
-    desired_size = 2
-    max_size     = 4
-    min_size     = 2
-  }
-
-  capacity_type = "SPOT"
-
-  labels = {
-    type = "spot"
-  }
-
-  update_config {
-    max_unavailable = 1
-  }
-
-  disk_size = 50
-
-
-  depends_on = [aws_eks_cluster.eks]
-
-}
-
-
+# resource "aws_eks_node_group" "eks_node_group_spot" {
+#   cluster_name  = aws_eks_cluster.eks.name
+#   node_group_name = "${var.cluster_name}-spot-nodes"
+#   node_role_arn = aws_iam_role.eks_nodegroup_role.arn
+#   subnet_ids = module.vpc.private_subnets
+#
+#   instance_types = ["t3.medium","t3a.large", "t3a.xlarge"]
+#
+#   scaling_config {
+#     desired_size = 2
+#     max_size     = 4
+#     min_size     = 2
+#   }
+#
+#   capacity_type = "SPOT"
+#
+#   labels = {
+#     type = "spot"
+#   }
+#
+#   update_config {
+#     max_unavailable = 1
+#   }
+#
+#   disk_size = 50
+#
+#
+#   depends_on = [aws_eks_cluster.eks]
+#
+# }
+#
+#
 resource "aws_eks_addon" "eks_addons" {
   for_each      = { for idx, addon in var.addons : idx => addon }
   cluster_name  = aws_eks_cluster.eks.name
@@ -121,6 +121,6 @@ resource "aws_eks_addon" "eks_addons" {
 
   depends_on = [
     aws_eks_node_group.eks_node_group_ondemand,
-    aws_eks_node_group.eks_node_group_spot
+#     aws_eks_node_group.eks_node_group_spot
   ]
 }
