@@ -8,8 +8,30 @@ provider "helm" {
       command     = "aws"
     }
   }
+
 }
 
+# resource "helm_release" "aws_ebs_csi_driver" {
+#   name       = "aws-ebs-csi-driver"
+#   repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
+#   chart      = "aws-ebs-csi-driver"
+#   namespace  = "kube-system"
+#
+#   set {
+#     name  = "serviceAccount.name"
+#     value = "ebs-csi-controller-sa"
+#   }
+#
+#   set {
+#     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+#     value = aws_iam_role.eks_ebs_csi_driver.arn
+#   }
+#
+#   depends_on = [
+#     aws_eks_addon.csi_driver
+#   ]
+#
+# }
 
 #aws loadbalancer controller
 resource "helm_release" "aws-load-balancer-controller" {
@@ -18,7 +40,7 @@ resource "helm_release" "aws-load-balancer-controller" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
   namespace  = "kube-system"
-  version    = "1.4.8"
+  version    = "1.4.4"
 
   set {
     name  = "clusterName"
@@ -36,14 +58,18 @@ resource "helm_release" "aws-load-balancer-controller" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = aws_iam_role.aws_load_balancer_controller.arn
+    value = module.aws_load_balancer_controller_irsa_role.iam_role_arn
+  }
+
+  set {
+    name  = "vpcId"
+    value = module.vpc.vpc_id
   }
 
   depends_on = [
     aws_eks_cluster.eks,
     aws_eks_node_group.eks_node_group_ondemand,
-    aws_eks_node_group.eks_node_group_spot,
-    aws_iam_role_policy_attachment.aws_load_balancer_controller_attach
+#     aws_iam_role_policy_attachment.aws_load_balancer_controller_attach
   ]
 }
 

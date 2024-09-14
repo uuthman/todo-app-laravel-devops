@@ -36,7 +36,7 @@ resource "aws_eks_cluster" "eks" {
     subnet_ids = module.vpc.private_subnets
     security_group_ids = [aws_security_group.worker_mgmt.id]
     endpoint_private_access = true
-    endpoint_public_access = false
+    endpoint_public_access = true
   }
 
   access_config {
@@ -75,8 +75,12 @@ resource "aws_eks_node_group" "eks_node_group_ondemand" {
     max_unavailable = 1
   }
 
+  tags = {
+    "Name" = "${var.cluster_name}-ondemand-nodes"
+  }
 
-#   depends_on = [aws_eks_cluster.eks]
+
+  depends_on = [aws_eks_cluster.eks]
 
 }
 

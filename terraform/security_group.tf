@@ -5,9 +5,9 @@ resource "aws_security_group" "worker_mgmt" {
 
   ingress {
     description       = "allow inbound traffic from eks"
-    from_port         = 433
+    from_port         = 443
     protocol          = "tcp"
-    to_port           = 433
+    to_port           = 443
     cidr_blocks = [
       "0.0.0.0/0",
     ]
@@ -36,11 +36,27 @@ resource "aws_security_group" "jump_server_sg" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port         = "22"
+    from_port         = 22
     protocol          = "tcp"
-    to_port           = "22"
+    to_port           = 22
     cidr_blocks       = ["0.0.0.0/0"]
   }
+
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Outbound rule for HTTPS traffic (port 443)
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 }
 
 

@@ -17,6 +17,8 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
+
+
   tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }

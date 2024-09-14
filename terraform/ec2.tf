@@ -3,6 +3,10 @@ resource "aws_instance" "jump_server" {
   instance_type = "t2.micro"
   security_groups = [aws_security_group.jump_server_sg.id]
   subnet_id = module.vpc.public_subnets[1]
+  associate_public_ip_address = true
+
+  iam_instance_profile = aws_iam_instance_profile.jump_server_profile.id
+
 
   user_data = <<-EOF
      #!/bin/bash
@@ -23,4 +27,9 @@ resource "aws_instance" "jump_server" {
      #install helm
      sudo snap install helm --classic
   EOF
+}
+
+resource "aws_iam_instance_profile" "jump_server_profile" {
+  name = "jump-server-instance-profile"
+  role = aws_iam_role.eks_cluster_role.name
 }
