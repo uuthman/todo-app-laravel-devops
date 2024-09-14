@@ -18,7 +18,7 @@ image:
   repository: uthutu/todo-app
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "10827812574"
+  tag: "10848720341"
 
 imagePullSecrets: []
 nameOverride: ""
